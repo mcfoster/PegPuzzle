@@ -13,7 +13,7 @@ The game rules are simple, start with one empty peg hole, the remove pegs by jum
 
 This is a console application written in C++ to find all posible solutions starting with any selected vacent peg hole. This code uses a recursive function call to find all solutions to the puzzle.
 
-To compile this under linux, I found there is in conio.h, and so not getch(). So just un-comment the "#define LINUX_APP" statement to use an alternate getch() function.
+To compile this under linux, I found there is no conio.h, and so no getch() function. So just un-comment the "#define LINUX_APP" statement to use the alternate getch() function.
 
 If you run the game with no commandline arguments, it will prompt you for a starting empty peg hole, otherwise it will expect that the first parameter is the desired empty peg hole. The application will begin testing all jump paths and displaying all successfull solutions. I would redirect the solutions to a test file as shown in example #3.
 
