@@ -18,14 +18,14 @@ You will have solved the puzzle by ending up with only a single remaining peg.
 #include <stdio.h>
 #include <string.h>
 
-// Uncomment the following if building on linux.
-//#define LINUX_APP
+//#define WIN defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 
-#ifdef LINUX_APP
+#ifdef __linux__
 #include <termios.h>
 #else
 #include <conio.h>
 #endif
+
 #include <unistd.h>
 #include <stdio.h>
 #include "CJumpChoices.h"
@@ -40,41 +40,80 @@ const int PegHoles = 15;
 char puzzleBoard[] = "111111111111111";
 
 int FetchEmptyPeg();
+
 void showPuzzle(char board[]);
-#ifdef LINUX_APP
+//#ifdef LINUX_APP
+#ifdef __linux__
+
 int getch(void);
+
 int getche(void);
+
 #endif
 
 const int TotalJumpOptions = 36;
 // All choices {from, to, jumped} indexes
-JumpChoice AllChoices[TotalJumpOptions] = {{0, 3, 1}, {0, 5, 2}, {1,6,3},
-        {1,8,4},{2,7,4},
-        {2,9,5}, {3,0,1}, {3,5,4}, {3,10,6}, {3,12,7}, {4,11,7}, {4,13,8},
-        {5,0,2}, {5,3,4}, {5,12,8}, {5,14,9}, {6,1,3}, {6,8,7}, {7,2,4},
-        {7,9,8}, {8,1,4}, {8,6,7}, {9,2,5}, {9,7,8}, {10,3,6}, {10,12,11},
-        {11,4,7}, {11,13,12}, {12,3,7}, {12,5,8}, {12,10,11}, {12,14,13},
-        {13,4,8}, {13,11,12}, {14,5,9}, {14,12,13}};
+JumpChoice AllChoices[TotalJumpOptions] = {{0,  3,  1},
+                                           {0,  5,  2},
+                                           {1,  6,  3},
+                                           {1,  8,  4},
+                                           {2,  7,  4},
+                                           {2,  9,  5},
+                                           {3,  0,  1},
+                                           {3,  5,  4},
+                                           {3,  10, 6},
+                                           {3,  12, 7},
+                                           {4,  11, 7},
+                                           {4,  13, 8},
+                                           {5,  0,  2},
+                                           {5,  3,  4},
+                                           {5,  12, 8},
+                                           {5,  14, 9},
+                                           {6,  1,  3},
+                                           {6,  8,  7},
+                                           {7,  2,  4},
+                                           {7,  9,  8},
+                                           {8,  1,  4},
+                                           {8,  6,  7},
+                                           {9,  2,  5},
+                                           {9,  7,  8},
+                                           {10, 3,  6},
+                                           {10, 12, 11},
+                                           {11, 4,  7},
+                                           {11, 13, 12},
+                                           {12, 3,  7},
+                                           {12, 5,  8},
+                                           {12, 10, 11},
+                                           {12, 14, 13},
+                                           {13, 4,  8},
+                                           {13, 11, 12},
+                                           {14, 5,  9},
+                                           {14, 12, 13}};
 
 
 void DoJumps(char *board, CJumpChoices *history);
+
 int RemainingJumps(char *board);
+
 CJumpChoices *findChoices(char *board);
+
 void jump(JumpChoice choice, char *board);
+
 int countPegs(char *board);
+
 void printHistory(CJumpChoices *history);
 
 
 /****************************************************************************
 *
 ****************************************************************************/
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     int startPg;
     CJumpChoices *historyList = new CJumpChoices();
     //showPuzzle(puzzleBoard);
     if (argc > 1) {
-        startPg =   atoi(argv[1]);
-        if((startPg < 0) ||(startPg >= PegHoles))
+        startPg = atoi(argv[1]);
+        if ((startPg < 0) || (startPg >= PegHoles))
             startPg = 0;
     } else {
         startPg = FetchEmptyPeg();
@@ -91,35 +130,30 @@ int main(int argc, char** argv) {
  * @param board
  * @param history
  */
-void DoJumps(char *board, CJumpChoices *history)
-{
+void DoJumps(char *board, CJumpChoices *history) {
     CJumpChoices *jumps = findChoices(board);
     int count = jumps->RecCount;
 
     //showPuzzle(board);
     //printf("Jump count= %d\n",count);
 
-    if(count < 1)
-    {
+    if (count < 1) {
         int pegCount = countPegs(board);
-        if(pegCount == 1) // winner
+        if (pegCount == 1) // winner
         {
-            printf("Winner\n");
+            printf("Winner\n\n");
             printHistory(history);
         }
 
         history->clear();
         // new board
-    }
-    else
-    {
-        for(int i = 0;i<count;i++)
-        {
-            char *myBoard  = strdup(board);
+    } else {
+        for (int i = 0; i < count; i++) {
+            char *myBoard = strdup(board);
             CJumpChoices *myHistory = new CJumpChoices(history);
             JumpChoice jmp = jumps->get(i);
             //printf("Jump from %d, to %d\n", jmp.from, jmp.to);
-            jump(jmp,myBoard);
+            jump(jmp, myBoard);
             myHistory->add(jmp);
             DoJumps(myBoard, myHistory);
             delete myBoard;
@@ -134,11 +168,10 @@ void DoJumps(char *board, CJumpChoices *history)
  * @param board
  * @return
  */
-int countPegs(char *board)
-{
+int countPegs(char *board) {
     int count = 0;
-    for(int i=0; (i < PegHoles) && board[i]; i++)
-        if(board[i] == '1')
+    for (int i = 0; (i < PegHoles) && board[i]; i++)
+        if (board[i] == '1')
             count++;
     return count;
 } // countPegs
@@ -149,8 +182,7 @@ int countPegs(char *board)
  * @param fromPeg
  * @return
  */
-CJumpChoices *findChoices(char *board)
-{
+CJumpChoices *findChoices(char *board) {
     CJumpChoices *validJumps = new CJumpChoices();
     for (int i = 0; i < TotalJumpOptions; i++) {
         if (board[AllChoices[i].from] == '1') {
@@ -167,11 +199,9 @@ CJumpChoices *findChoices(char *board)
  * @param choice
  * @param board
  */
-void jump(JumpChoice choice, char *board)
-{
-    if((board[choice.from] == '1') && (board[choice.to] == '0')
-       && (board[choice.jumped] == '1'))
-    {
+void jump(JumpChoice choice, char *board) {
+    if ((board[choice.from] == '1') && (board[choice.to] == '0')
+        && (board[choice.jumped] == '1')) {
         board[choice.from] = '0';
         board[choice.jumped] = '0';
         board[choice.to] = '1';
@@ -181,26 +211,23 @@ void jump(JumpChoice choice, char *board)
 /****************************************************************************
 * Fetch a user selected blank peg. Default is zero.
 ****************************************************************************/
-int FetchEmptyPeg()
-{
+int FetchEmptyPeg() {
     char c;
 
     int done = FALSE;
-    int temp=0, rval = 0;
+    int temp = 0, rval = 0;
     printf("Enter starting peg hole, 0 to 14 (0): ");
-    do{
+    do {
         c = (char) getch();
-        if((c >= '0') && (c <= '9'))
-        {
+        if ((c >= '0') && (c <= '9')) {
             putchar(c); //show the digit
             temp = temp * 10 + (c - '0');
-        }
-        else if(c <= 13) // Return or linefeed
+        } else if (c <= 13) // Return or linefeed
             done = TRUE;
-        if(temp > 9) // two digits
+        if (temp > 9) // two digits
             done = TRUE;
-        if((temp > 0) &&(temp < 15))
-            rval=temp;
+        if ((temp > 0) && (temp < 15))
+            rval = temp;
     } while (!done);
     putchar('\n');
     return rval;
@@ -209,8 +236,7 @@ int FetchEmptyPeg()
 /****************************************************************************
 * Output the puzzle to the console
 ****************************************************************************/
-void showPuzzle(char board[])
-{
+void showPuzzle(char board[]) {
     int buffer = 5;
     int rows = 5;
     int cols = 1;
@@ -228,12 +254,11 @@ void showPuzzle(char board[])
 //        putchar('\n');
 //    }
 
-    for(int i=0; i<rows; i++)
-    {
-        for(int j=0;j<buffer;j++)
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < buffer; j++)
             printf("  ");
         buffer--;
-        for(int j=0;j<cols;j++){
+        for (int j = 0; j < cols; j++) {
             printf("%c[%02d] ", board[idx], idx);
             idx++;
         }
@@ -246,40 +271,40 @@ void showPuzzle(char board[])
 /****************************************************************************
  * Print thejump history
  */
-void printHistory(CJumpChoices *history)
-{
-    for(int i=0; i<history->RecCount; i++)
-    {
-       printf("From: %d, to: %d\n",
-              history->get(i).from, history->get(i).to);
+void printHistory(CJumpChoices *history) {
+    printf("=================\n");
+    for (int i = 0; i < history->RecCount; i++) {
+        printf("From: %d, to: %d\n",
+               history->get(i).from, history->get(i).to);
     } // next i
 } // printHistory
 
-#ifdef LINUX_APP
+#ifdef __linux__
+
 /* reads from keypress, doesn't echo */
-int getch(void)
-{
+int getch(void) {
     struct termios oldattr, newattr;
     int ch;
-    tcgetattr( STDIN_FILENO, &oldattr );
+    tcgetattr(STDIN_FILENO, &oldattr);
     newattr = oldattr;
-    newattr.c_lflag &= ~( ICANON | ECHO );
-    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    newattr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
     ch = getchar();
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
 }
+
 /* reads from keypress, echoes */
-int getche(void)
-{
+int getche(void) {
     struct termios oldattr, newattr;
     int ch;
-    tcgetattr( STDIN_FILENO, &oldattr );
+    tcgetattr(STDIN_FILENO, &oldattr);
     newattr = oldattr;
-    newattr.c_lflag &= ~( ICANON );
-    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    newattr.c_lflag &= ~(ICANON);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
     ch = getchar();
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
 }
+
 #endif
