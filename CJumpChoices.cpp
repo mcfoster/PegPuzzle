@@ -1,6 +1,7 @@
-//
-// Created by chris on 4/18/18.
-//
+/********************************************
+ * Author: Martin C. Foster
+ * Date: April 18,2018
+ */
 #include <stdlib.h>
 #include <memory.h>
 #include "CJumpChoices.h"
@@ -9,12 +10,10 @@
  * Create a duplicate
  * @param choices
  */
-CJumpChoices::CJumpChoices(CJumpChoices *choices)
-{
+CJumpChoices::CJumpChoices(CJumpChoices *choices) {
     header = NULL;
     RecCount = 0;
-    for(int i=0;i<choices->RecCount; i++)
-    {
+    for (int i = 0; i < choices->RecCount; i++) {
         add(choices->get(i));
     }
 } // CJumpChoices
@@ -23,25 +22,21 @@ CJumpChoices::CJumpChoices(CJumpChoices *choices)
  * Add a record to the list
  * @param rec record to be added
  */
-void CJumpChoices::add(JumpChoice rec)
-{
+void CJumpChoices::add(JumpChoice rec) {
     JumpChoice *prec = new JumpChoice();
     prec->from = rec.from;
     prec->to = rec.to;
     prec->jumped = rec.jumped;
     Node *ptr = header;
-    if(ptr == NULL)
-    {
+    if (ptr == NULL) {
         header = new Node();
         header->prec = prec;
         header->next = NULL;
         RecCount++;
-    }
-    else
-    {
-        while(ptr->next != NULL)
+    } else {
+        while (ptr->next != NULL)
             ptr = ptr->next;
-        if(ptr->next == NULL) // Found
+        if (ptr->next == NULL) // Found
         {
             ptr->next = new Node();
             ptr->next->prec = prec;
@@ -56,22 +51,19 @@ void CJumpChoices::add(JumpChoice rec)
  * @param idx
  * @return
  */
-JumpChoice CJumpChoices::get(int idx)
-{
+JumpChoice CJumpChoices::get(int idx) {
     JumpChoice rec;
     Node *ptr = header;
 
     rec.from = rec.to = rec.jumped = 0;
     // Bail on invalid request
-    if((header!= NULL) && (idx <= RecCount))
-    {
-        int i=0;
-        while ((i < idx) && (ptr->next != NULL))
-        {
+    if ((header != NULL) && (idx <= RecCount)) {
+        int i = 0;
+        while ((i < idx) && (ptr->next != NULL)) {
             ptr = ptr->next;
             i++;
         }
-        if(i== idx) // Found
+        if (i == idx) // Found
         {
             rec.from = ptr->prec->from;
             rec.to = ptr->prec->to;
@@ -86,29 +78,25 @@ JumpChoice CJumpChoices::get(int idx)
  * Delete the record at the selected index
  * @param idx
  */
-void CJumpChoices::remove(int idx)
-{
+void CJumpChoices::remove(int idx) {
     Node *ptr = header;
     Node *prevPtr = NULL;
     // Bail on invalid request
-    if((header!= NULL) && (idx <= RecCount))
-    {
-        int i=0;
-        while ((i < idx) && (ptr->next != NULL))
-        {
+    if ((header != NULL) && (idx <= RecCount)) {
+        int i = 0;
+        while ((i < idx) && (ptr->next != NULL)) {
             prevPtr = ptr;
             ptr = ptr->next;
             i++;
         }
-        if(i== idx) // Found
+        if (i == idx) // Found
         {
-            if(idx==0) {
+            if (idx == 0) {
                 prevPtr = header;
                 header = ptr->next;
                 delete prevPtr->prec;
                 delete prevPtr;
-            }
-            else {
+            } else {
                 prevPtr->next = ptr->next;
                 delete ptr->prec;
                 delete ptr;
@@ -121,13 +109,11 @@ void CJumpChoices::remove(int idx)
 /****************************************************************************
  * Delete all records in the list
  */
-void CJumpChoices::clear()
-{
+void CJumpChoices::clear() {
     Node *p = header;
     Node *next = NULL;
 
-    while (p != NULL)
-    {
+    while (p != NULL) {
         next = p->next;
         delete p->prec;
         delete p;

@@ -1,26 +1,36 @@
-//
-// Created by chris on 4/18/18.
-//
+/********************************************
+ * Author: Martin C. Foster
+ * Date: April 18,2018
+ */
 
 #ifndef PEGGAME_CJUMPCHOICES_H
 #define PEGGAME_CJUMPCHOICES_H
 
-struct JumpChoice{
+struct JumpChoice {
     int from, to, jumped;
 };
 
 class CJumpChoices {
 public:
     int RecCount;
-    CJumpChoices() {header = NULL; RecCount = 0;};
+
+    CJumpChoices() {
+        header = NULL;
+        RecCount = 0;
+    };
+
     CJumpChoices(CJumpChoices *choices);
+
     void add(JumpChoice rec);
+
     JumpChoice get(int idx);
+
     void remove(int idx);
+
     void clear();
 
 private:
-    struct Node{
+    struct Node {
         JumpChoice *prec;
         Node *next;
     };
